@@ -1,6 +1,5 @@
 
 
-
 #include <Arduino.h>
 #include <BleKeyboard.h>
 
@@ -17,7 +16,12 @@ void setup() {
   pinMode(INPUT_RIGHT, INPUT_PULLUP);
 
   Serial.begin(115200);
+
+  blePageTurner.setName("LS PageShift");
+
   blePageTurner.begin();
+  
+
   Serial.print("\nSetup successful for version: V1 ");
  
 }
