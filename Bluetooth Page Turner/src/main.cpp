@@ -19,8 +19,8 @@
 #define INPUT_RIGHT 26
 #define INPUT_DISCONNECT 25
 #define INPUT_RECONNECT 32
-#define INPUT_ADVERTISING 16
-#define INPUT_PLACEHOLDER 17
+#define INPUT_PLACEHOLDER1 16
+#define INPUT_PLACEHOLDER2 17
 
 
 BleKeyboard devicePageShift;
@@ -33,8 +33,9 @@ void customDisconnect()
       
 
   // get pointer to client and connID  [to do: fix hardcoding]
-  Serial.print("getClientListSize(): ");
-  Serial.println(NimBLEDevice::getClientListSize());
+  // [if no clients are created, how are connIDs handled???]
+  //Serial.print("getClientListSize(): ");
+  //Serial.println(NimBLEDevice::getClientListSize());
   //std::list<NimBLEDevice*>* pClientList = (devicePageShift.hid->getClientList());   // get client list
   //NimBLEClient* pClient = nullptr;    // placeholder, assign client from list or else ESP panics
   //uint16_t connID = pClient->getConnId();
@@ -85,8 +86,8 @@ void setup()
   pinMode(INPUT_RIGHT, INPUT_PULLUP);
   pinMode(INPUT_DISCONNECT, INPUT_PULLUP);
   pinMode(INPUT_RECONNECT, INPUT_PULLUP);
-  pinMode(INPUT_ADVERTISING, INPUT_PULLUP);
-  pinMode(INPUT_PLACEHOLDER, INPUT_PULLUP);
+  pinMode(INPUT_PLACEHOLDER1, INPUT_PULLUP);
+  pinMode(INPUT_PLACEHOLDER2, INPUT_PULLUP);
 
   // serial setup
   Serial.begin(115200);
@@ -121,23 +122,33 @@ void loop()
     {
       Serial.println("Disconnect pressed");
       customDisconnect();
+
+      // remove bonds from here in the future?
     }
   }
 
   // Reconnect to a device
-  /*else*/ if (digitalRead(INPUT_ADVERTISING) == LOW)
+  /*else*/ if (digitalRead(INPUT_RECONNECT) == LOW)
   {
     Serial.println("Reconnect pressed");
     customReconnect();
   }
-  if (digitalRead(INPUT_PLACEHOLDER) == LOW)
+  if (digitalRead(INPUT_PLACEHOLDER1) == LOW)
   {
-    Serial.print("getClientListSize(): ");
-    Serial.println(NimBLEDevice::getClientListSize());
+    Serial.println("Deleting all bonds");
+    NimBLEDevice::deleteAllBonds();
+  }
+  if (digitalRead(INPUT_PLACEHOLDER2) == LOW)
+  {
+    // [Client List seems useless for now, don't think they are created from BleKeyboard]
+    //Serial.print("getClientListSize(): ");
+    //Serial.println(NimBLEDevice::getClientListSize());
+    Serial.print("getNumBonds(): ");
+    Serial.println(NimBLEDevice::getNumBonds());
   }
 
   
-  
+
 }
   
 
