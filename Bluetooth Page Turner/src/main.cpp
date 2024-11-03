@@ -4,6 +4,8 @@
  * - return values for customDisconnect/Reconnect only placeholder
  * - pairing input button usually pressed over multiple cycles -> input issues
  * - connID for disconnect hardcoded
+ * - iOS seems to demand pairing as first device
+ * - getNumBonds() returns max. 2 -> check config for bond limit
  */
 
 #include <Arduino.h>
