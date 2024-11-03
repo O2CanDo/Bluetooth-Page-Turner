@@ -3,6 +3,7 @@
  * - reconnect ignores new device if previous device has bluetooth on
  * - return values for customDisconnect/Reconnect only placeholder
  * - pairing input button usually pressed over multiple cycles -> input issues
+ * - connID for disconnect hardcoded
  */
 
 #include <Arduino.h>
@@ -10,10 +11,16 @@
 
 #include <NimBLEDevice.h>
 
+
+
+
 // pin alias defines
-#define INPUT_LEFT 16
-#define INPUT_RIGHT 17
-#define INPUT_PAIRING 26
+#define INPUT_LEFT 27
+#define INPUT_RIGHT 26
+#define INPUT_DISCONNECT 25
+#define INPUT_RECONNECT 32
+#define INPUT_ADVERTISING 16
+#define INPUT_PLACEHOLDER 17
 
 
 BleKeyboard devicePageShift;
@@ -25,8 +32,9 @@ void customDisconnect()
   NimBLEServer* pServer =  NimBLEDevice::getServer();
       
 
-  // get pointer to client and connID
-  NimBLEDevice::getClientListSize();
+  // get pointer to client and connID  [to do: fix hardcoding]
+  Serial.print("getClientListSize(): ");
+  Serial.println(NimBLEDevice::getClientListSize());
   //std::list<NimBLEDevice*>* pClientList = (devicePageShift.hid->getClientList());   // get client list
   //NimBLEClient* pClient = nullptr;    // placeholder, assign client from list or else ESP panics
   //uint16_t connID = pClient->getConnId();
@@ -65,15 +73,20 @@ void customReconnect()
   NimBLEServer* pServer =  NimBLEDevice::getServer();
   pServer->startAdvertising();
   Serial.println("## Started advertising... ##");
+
+  // to do: add delay and status confirmation??
 }
 
 
-void setup() {
-
+void setup() 
+{
   // pin setup
   pinMode(INPUT_LEFT, INPUT_PULLUP);
   pinMode(INPUT_RIGHT, INPUT_PULLUP);
-  pinMode(INPUT_PAIRING, INPUT_PULLUP);
+  pinMode(INPUT_DISCONNECT, INPUT_PULLUP);
+  pinMode(INPUT_RECONNECT, INPUT_PULLUP);
+  pinMode(INPUT_ADVERTISING, INPUT_PULLUP);
+  pinMode(INPUT_PLACEHOLDER, INPUT_PULLUP);
 
   // serial setup
   Serial.begin(115200);
@@ -104,27 +117,26 @@ void loop()
       devicePageShift.write(KEY_RIGHT_ARROW);
     }
     // disconnect device
-    if (digitalRead(INPUT_PAIRING) == LOW) 
+    if (digitalRead(INPUT_DISCONNECT) == LOW) 
     {
+      Serial.println("Disconnect pressed");
       customDisconnect();
     }
   }
 
   // Reconnect to a device
-  else if (digitalRead(INPUT_PAIRING) == LOW)
+  /*else*/ if (digitalRead(INPUT_ADVERTISING) == LOW)
   {
+    Serial.println("Reconnect pressed");
     customReconnect();
   }
-  
-  
-  
+  if (digitalRead(INPUT_PLACEHOLDER) == LOW)
+  {
+    Serial.print("getClientListSize(): ");
+    Serial.println(NimBLEDevice::getClientListSize());
+  }
 
-
   
-  
-  
-
- 
   
 }
   
